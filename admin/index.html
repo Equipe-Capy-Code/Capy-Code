@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capy Admin v2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0A0C; --bg2: #121216; --bg3: #1C1C22;
+      --border: #26262C; --text: #EDEDEB; --text2: #A1A1AA; --text3: #52525B;
+      --amber: #F59E0B; --amber-s: #2D1D00; --red: #EF4444;
+      --r: 'Inter', sans-serif; --m: 'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--r); background: var(--bg); color: var(--text); line-height: 1.5; overflow: hidden; height: 100vh; }
+    
+    /* Login */
+    #loginScreen { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+    .login-card { background: var(--bg2); border: 1px solid var(--border); padding: 40px; border-radius: 24px; width: 100%; max-width: 400px; text-align: center; }
+    
+    /* Layout */
+    #adminApp { display: flex; height: 100vh; width: 100vw; }
+    .sidebar { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+    
+    /* Sidebar */
+    .sb-head { padding: 24px; border-bottom: 1px solid var(--border); }
+    .sb-logo { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.02em; }
+    .sb-logo b { color: var(--amber); }
+    .sb-nav { padding: 12px; flex: 1; }
+    .sb-nav-item { padding: 10px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; color: var(--text2); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+    .sb-nav-item:hover { background: var(--bg3); color: var(--text); }
+    .sb-nav-item.active { background: var(--amber-s); color: var(--amber); font-weight: 500; }
+    .sb-footer { padding: 20px; border-top: 1px solid var(--border); }
+    .nav-badge { font-family: var(--m); font-size: 0.6rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    /* Top Bar */
+    .top-bar { height: 64px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; background: var(--bg2); }
+    .top-title { font-weight: 600; font-size: 1.1rem; }
+    
+    /* Views */
+    .view-container { padding: 32px; height: calc(100vh - 64px); overflow-y: auto; }
+    
+    /* Dash Cards */
+    .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; }
+    .dash-card { background: var(--bg2); border: 1px solid var(--border); padding: 24px; border-radius: 16px; }
+    .dash-label { font-size: 0.75rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .dash-val { font-family: var(--m); font-size: 2rem; font-weight: 500; }
+    
+    .chart-container { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 32px; }
+    .chart-header { font-size: 0.9rem; font-weight: 600; margin-bottom: 20px; color: var(--text2); }
+    canvas { width: 100% !important; height: 300px !important; }
+
+    /* Articles Layout */
+    .articles-shell { display: grid; grid-template-columns: 320px 1fr; gap: 24px; height: 100%; }
+    .articles-list-side { border: 1px solid var(--border); border-radius: 16px; background: var(--bg2); overflow-y: auto; }
+    .art-item { padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s; }
+    .art-item:hover { background: var(--bg3); }
+    .art-item.active { background: var(--bg3); border-left: 3px solid var(--amber); }
+    .art-item-title { font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; }
+    .art-item-meta { font-family: var(--m); font-size: 0.65rem; color: var(--text3); display: flex; gap: 8px; }
+
+    .editor-side { border: 1px solid var(--border); border-radius: 16px; background: var(--bg2); display: flex; flex-direction: column; overflow: hidden; }
+    .editor-toolbar { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--bg3); }
+    .editor-body { flex: 1; padding: 24px; overflow-y: auto; }
+    .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text3); }
+    .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.3; }
+
+    /* Inputs */
+    .input { background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 8px; font-family: var(--r); font-size: 0.9rem; width: 100%; outline: none; transition: border-color 0.2s; }
+    .input:focus { border-color: var(--amber); }
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-size: 0.75rem; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-weight: 500; cursor: pointer; border: none; font-family: var(--r); font-size: 0.9rem; transition: all 0.2s; }
+    .btn-primary { background: var(--amber); color: #000; }
+    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+    /* Editor Tabs */
+    .tabs { display: flex; gap: 4px; background: var(--bg2); padding: 4px; border-radius: 10px; border: 1px solid var(--border); }
+    .tab { padding: 6px 16px; border-radius: 7px; font-size: 0.8rem; cursor: pointer; border: none; background: transparent; color: var(--text3); transition: all 0.2s; }
+    .tab.active { background: var(--bg3); color: var(--text); }
+
+    /* Markdown Editor */
+    .md-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); height: 100%; }
+    .md-pane { background: var(--bg2); overflow-y: auto; }
+    .md-pane textarea { width: 100%; height: 100%; background: transparent; border: none; color: var(--text); padding: 24px; font-family: var(--m); font-size: 0.9rem; line-height: 1.6; resize: none; outline: none; }
+    .md-preview { padding: 24px; font-size: 0.95rem; line-height: 1.7; color: var(--text2); }
+    .md-preview h1, .md-preview h2 { color: var(--text); margin: 1.5em 0 0.5em; }
+    
+    /* Images */
+    .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; color: var(--text3); cursor: pointer; transition: all 0.2s; }
+    .drop-zone:hover { border-color: var(--amber); color: var(--text2); }
+    .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 24px; }
+    .img-thumb { aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; position: relative; }
+    .img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .img-thumb:hover { border-color: var(--amber); }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--amber); padding: 12px 20px; border-radius: 12px; font-size: 0.85rem; z-index: 11000; animation: slideUp 0.3s ease-out; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <div id="loginScreen" style="display:none">
+    <div class="login-card">
+      <div style="font-size:3rem;margin-bottom:20px">🦫</div>
+      <h2>Capy Admin</h2>
+      <p style="color:var(--text3);font-size:0.8rem;margin-bottom:24px">Digite a senha mestra para entrar</p>
+      <input type="password" id="passInput" class="input" placeholder="••••••••" style="text-align:center;margin-bottom:12px">
+      <div id="loginErr" style="color:var(--red);font-size:0.75rem;margin-bottom:12px"></div>
+      <button class="btn btn-primary" id="btnLogin" style="width:100%">Entrar</button>
+    </div>
+  </div>
+
+  <div id="adminApp" style="display:none">
+    <aside class="sidebar">
+      <div class="sb-head">
+        <div class="sb-logo">🦫 capy<b>admin</b></div>
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-nav-item active" id="nav-dash">📊 Dashboard</div>
+        <div class="sb-nav-item" id="nav-articles">📝 Artigos</div>
+        <div class="sb-nav-item" id="nav-new" style="color:var(--amber)">+ Novo Artigo</div>
+      </nav>
+      <div class="sb-footer">
+        <div class="nav-badge">admin v2.0</div>
+        <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px" id="btnLogout">Sair</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="top-title" id="pageTitle">Dashboard</div>
+        <div class="top-end">
+          <a href="/" target="_blank" class="btn btn-ghost btn-sm">← Ver blog</a>
+        </div>
+      </header>
+
+      <div class="view-container" id="dashView">
+        <div class="dash-grid">
+          <div class="dash-card">
+            <div class="dash-label">Total de Views (Hoje)</div>
+            <div class="dash-val" id="stat-today">0</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-label">Total de Artigos</div>
+            <div class="dash-val" id="stat-total">0</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-label">Taxa de Publicação</div>
+            <div class="dash-val" id="stat-ratio">0%</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-header">Acessos nos últimos 7 dias</div>
+          <canvas id="viewsChart"></canvas>
+        </div>
+
+        <div class="dash-row">
+          <div class="dash-table-card" style="background:var(--bg2);border:1px solid var(--border);padding:24px;border-radius:16px">
+            <div class="chart-header">Top Artigos</div>
+            <div id="topArticlesList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-container" id="articlesView" style="display:none">
+        <div class="articles-shell">
+          <div class="articles-list-side">
+            <div class="article-list" id="articleList"></div>
+          </div>
+          <div class="editor-side" id="editorArea">
+            <div class="empty">
+              <div class="empty-icon">✍️</div>
+              <p>Selecione um artigo na lista ou crie um novo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="article-title">Capy Code</title>
+<meta name="description" id="article-desc" content="">
+<meta property="og:type" content="article">
+<meta property="og:title" id="og-title" content="">
+<meta property="og:description" id="og-desc" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Prism.js syntax highlighting -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+/* Article-specific styles */
+.article-layout{max-width:1080px;margin:0 auto;padding:48px 32px;display:grid;grid-template-columns:1fr 280px;gap:64px;align-items:start}
+.article-header{margin-bottom:40px}
+.article-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.article-h1{font-family:'Lora',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-style:italic;line-height:1.15;margin-bottom:16px;color:var(--text)}
+.article-meta-row{display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text3);flex-wrap:wrap}
+.meta-sep{color:var(--border)}
+.article-cover{width:100%;border-radius:12px;margin:32px 0;aspect-ratio:16/9;object-fit:cover}
+
+/* Prose */
+.prose{font-size:1rem;line-height:1.85;color:var(--text2)}
+.prose h1,.prose h2,.prose h3,.prose h4{font-family:'Lora',serif;color:var(--text);margin:2em 0 .6em;line-height:1.2}
+.prose h1{font-size:1.9rem;font-style:italic}
+.prose h2{font-size:1.45rem;font-style:italic;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.prose h3{font-size:1.15rem}
+.prose p{margin:1em 0}
+.prose a{color:var(--amber);text-decoration:underline;text-underline-offset:3px}
+.prose a:hover{opacity:.75}
+.prose strong{color:var(--text);font-weight:600}
+.prose em{font-style:italic}
+.prose blockquote{border-left:3px solid var(--amber);padding:4px 20px;margin:1.5em 0;font-style:italic;color:var(--text2)}
+.prose ul,.prose ol{padding-left:1.5em;margin:1em 0}
+.prose li{margin:.4em 0}
+.prose li>ul{margin:.2em 0}
+.prose hr{border:none;border-top:1px solid var(--border);margin:2.5em 0}
+.prose img{max-width:100%;border-radius:10px;margin:1.5em 0}
+.prose table{width:100%;border-collapse:collapse;margin:1.5em 0;font-size:.875rem}
+.prose th{background:var(--bg2);font-weight:600;color:var(--text);padding:10px 14px;border:1px solid var(--border);text-align:left}
+.prose td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+.prose tr:nth-child(even) td{background:var(--bg2)}
+.prose pre{margin:1.5em 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.prose pre code{font-size:.78rem;line-height:1.7}
+.prose :not(pre)>code{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:var(--bg2);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--amber)}
+
+/* ToC */
+.toc{position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+.toc-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+.toc-item{font-size:.82rem;color:var(--text2);cursor:pointer;padding:3px 0 3px 12px;border-left:2px solid var(--border);transition:all .15s;line-height:1.4}
+.toc-item:hover,.toc-item.active{color:var(--amber);border-left-color:var(--amber)}
+.toc-item.depth-3{padding-left:24px;font-size:.78rem}
+.toc-item.depth-4{padding-left:36px;font-size:.75rem}
+
+/* Back button */
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;color:var(--text2);margin-bottom:24px;transition:color .15s;font-weight:500}
+.back-link:hover{color:var(--amber)}
+
+/* Progress bar */
+#readProgress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--amber);transform:scaleX(0);transform-origin:left;z-index:200;transition:transform .05s linear}
+
+/* Error/loading */
+.article-loading,.article-error{text-align:center;padding:80px 32px;color:var(--text3)}
+.article-error h2{font-family:'Lora',serif;font-style:italic;font-size:1.5rem;margin-bottom:8px;color:var(--text)}
+
+/* Share */
+.share-row{display:flex;gap:8px;margin-top:32px;padding-top:24px;border-top:1px solid var(--border)}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:.78rem;font-weight:500;border-radius:7px;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .15s;font-family:'Inter',sans-serif}
+.share-btn:hover{border-color:var(--amber);color:var(--amber)}
+
+@media(max-width:900px){
+  .article-layout{grid-template-columns:1fr;padding:32px 16px}
+  .toc{display:none}
+}
+</style>
+</head>
+<body>
+<div id="readProgress"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="/" class="logo">
+    <img src="https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?w=80&h=80&fit=crop&crop=face&q=80" alt="Capy">
+    <span>capy<b>code</b></span>
+  </a>
+  <div class="nav-items">
+    <a href="/">Artigos</a>
+  </div>
+  <div class="nav-end">
+    <button class="icon-btn" id="themeBtn">🌙</button>
+    <a href="/admin"><button class="btn-sm solid">Admin ↗</button></a>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div id="root">
+  <div class="article-loading">
+    <div style="font-size:2rem;margin-bottom:8px">⌛</div>
+    Carregando artigo…
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+// ── Theme ─────────────────────────────────────────────────────────────────────
+const savedTheme = localStorage.getItem('theme') || 'light';
+if (savedTheme === 'dark') document.documentElement.setAttribute('data-dark', '');
+document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const isDark = document.documentElement.hasAttribute('data-dark');
+  document.documentElement.toggleAttribute('data-dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+});
+
+// ── Navbar scroll ─────────────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// ── Reading progress bar ──────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('readProgress');
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  el.style.transform = `scaleX(${window.scrollY / docH})`;
+}, { passive: true });
+
+// ── Load article ──────────────────────────────────────────────────────────────
+async function loadArticle() {
+  const slug = new URLSearchParams(location.search).get('slug');
+  if (!slug) return showError('Artigo não especificado.', '/');
+
+  try {
+    const res = await fetch(`/api/articles/${slug}`);
+    if (!res.ok) return showError('Artigo não encontrado.', '/');
+    const article = await res.json();
+    renderArticle(article);
+  } catch {
+    showError('Erro ao carregar artigo. Servidor está rodando?', '/');
+  }
+}
+
+function showError(msg, backUrl) {
+  document.getElementById('root').innerHTML = `
+    <div class="article-error">
+      <div style="font-size:3rem;margin-bottom:12px">🦫</div>
+      <h2>${msg}</h2>
+      <a href="${backUrl}"><button class="btn-sm solid" style="margin-top:16px">← Voltar</button></a>
+    </div>`;
+}
+
+function renderArticle(a) {
+  // SEO
+  document.getElementById('article-title').textContent = `${a.title} — Capy Code`;
+  document.getElementById('article-desc').setAttribute('content', a.description);
+  document.getElementById('og-title').setAttribute('content', a.title);
+  document.getElementById('og-desc').setAttribute('content', a.description);
+
+  // Schema Injection
+  if (a.schema) {
+    const old = document.getElementById('article-schema');
+    if (old) old.remove();
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'article-schema';
+    script.text = JSON.stringify(a.schema);
+    document.head.appendChild(script);
+  }
+
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    <div class="article-layout">
+      <article>
+        <a href="/" class="back-link">← Voltar para artigos</a>
+        <header class="article-header">
+          <div class="article-tags">
+            ${a.tags.map(t => `<span class="tag t-amber">${t}</span>`).join('')}
+          </div>
+          <h1 class="article-h1">${a.title}</h1>
+          <div class="article-meta-row">
+            <span>${a.author}</span>
+            <span class="meta-sep">·</span>
+            <span>${formatDate(a.date)}</span>
+            <span class="meta-sep">·</span>
+            <span>${a.readTime}</span>
+          </div>
+        </header>
+        ${a.coverImage ? `<img src="${a.coverImage}" alt="${a.title}" class="article-cover">` : ''}
+        <div class="prose" id="prose">${a.html}</div>
+        <div class="share-row">
+          <button class="share-btn" onclick="copyLink()">🔗 Copiar link</button>
+          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(a.title)}&url=${encodeURIComponent(location.href)}" target="_blank">
+            <button class="share-btn">𝕏 Twitter</button>
+          </a>
+          <a href="https://www.linkedin.com/shareArticle?url=${encodeURIComponent(location.href)}" target="_blank">
+            <button class="share-btn">in LinkedIn</button>
+          </a>
+        </div>
+      </article>
+
+      <aside>
+        <nav class="toc" id="toc">
+          <div class="toc-title">Neste artigo</div>
+          <ul class="toc-list" id="tocList"></ul>
+        </nav>
+      </aside>
+    </div>`;
+
+  // Syntax highlighting
+  Prism.highlightAllUnder(document.getElementById('prose'));
+
+  // Build ToC
+  buildToC();
+
+  // Active ToC on scroll
+  watchHeadings();
+}
+
+function buildToC() {
+  const headings = document.querySelectorAll('.prose h2, .prose h3, .prose h4');
+  const list = document.getElementById('tocList');
+  if (!list || headings.length < 2) {
+    document.getElementById('toc').style.display = 'none';
+    return;
+  }
+  headings.forEach((h, i) => {
+    h.id = h.id || `heading-${i}`;
+    const depth = parseInt(h.tagName[1]);
+    const li = document.createElement('li');
+    li.className = `toc-item depth-${depth}`;
+    li.textContent = h.textContent;
+    li.onclick = () => h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    list.appendChild(li);
+  });
+}
+
+function watchHeadings() {
+  const items = document.querySelectorAll('.toc-item');
+  const headings = document.querySelectorAll('.prose h2,.prose h3,.prose h4');
+  if (!items.length) return;
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = [...headings].indexOf(e.target);
+        items.forEach((it, i) => it.classList.toggle('active', i === idx));
+      }
+    });
+  }, { rootMargin: '-10% 0px -85% 0px' });
+
+  headings.forEach(h => obs.observe(h));
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(location.href);
+  const btn = document.querySelector('.share-btn');
+  const orig = btn.textContent;
+  btn.textContent = '✓ Copiado!';
+  setTimeout(() => btn.textContent = orig, 2000);
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const date = new Date(d.includes('T') ? d : d + 'T12:00:00');
+  if (isNaN(date.getTime())) return d;
+  return date.toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+loadArticle();
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capy Code — Editorial de Engenharia de Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div id="themeReveal"></div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="/" class="logo">
+      <img src="https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?w=80&h=80&fit=crop&crop=face&q=80" alt="Capy Logo">
+      <span>capy<b>code</b></span>
+    </a>
+    <div class="nav-items">
+      <a href="/" class="active">Publicações</a>
+      <a href="#newsletter">Newsletter</a>
+      <a href="/admin">Admin</a>
+    </div>
+    <div class="nav-end">
+      <button class="icon-btn" id="themeBtn">🌙</button>
+    </div>
+  </nav>
+
+  <!-- HERO: FEATURE STORY -->
+  <div class="hero">
+    <div class="hero-inner">
+      <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1920&q=80" class="hero-bg" alt="Feature Cover">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-label"><span>Destaque Editorial</span> — 5 min de leitura</div>
+      <h1 class="hero-title-drama">O futuro das <i>interfaces</i> é <em>autônomo?</em></h1>
+      <p class="hero-desc">Uma análise profunda sobre como agentes de IA estão moldando a nova era do desenvolvimento front-end e a morte dos componentes estáticos.</p>
+      <div class="hero-actions">
+        <button class="btn-hero dark" onclick="location.href='#articlesSection'">Ler Artigo Completo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN FEED -->
+  <main class="sec articles-with-sidebar" id="articlesSection">
+    <div class="main-feed">
+      <div class="sec-label">Recentes</div>
+      <h2 class="sec-title">Explorar Coleção</h2>
+      <div class="article-grid" id="articleList"></div>
+      <div id="pagination"></div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-block">
+        <div class="sec-label">Telemetria</div>
+        <div class="tw-feed small">
+          <div id="typewriter"></div><span class="tw-cursor"></span>
+        </div>
+      </div>
+
+      <div class="sidebar-block">
+        <div class="sec-label">Tópicos</div>
+        <div class="tag-cloud" id="tagCloud"></div>
+      </div>
+
+      <div class="sidebar-block">
+        <div class="sec-label">Newsletter</div>
+        <form class="side-nl" onsubmit="handleNewsletter(event)">
+          <input type="email" id="nlEmail" placeholder="seu@email.com" required>
+          <button type="submit">Inscrever-se</button>
+        </form>
+        <div id="nlMsg" style="font-size:0.7rem; margin-top:10px"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- SECONDARY FEATURES -->
+  <section class="sec-dark">
+    <div class="sec-label" style="color:var(--amber); text-align:center">Laboratório</div>
+    <h2 style="font-family:var(--s); font-style:italic; font-size:2.5rem; text-align:center; color:#fff">Artefatos de Engenharia</h2>
+    
+    <div class="features-grid">
+      <div class="f-card">
+        <h3 style="color:#fff; margin-bottom:12px">Diagnostic Shuffler</h3>
+        <div class="shuffler-wrap" id="shuffler">
+          <div class="shuffler-card" style="top:0; z-index:3">Memory Leak Detection</div>
+          <div class="shuffler-card" style="top:20px; z-index:2; opacity:0.6">Event Loop Analysis</div>
+          <div class="shuffler-card" style="top:40px; z-index:1; opacity:0.3">V8 Engine Profiling</div>
+        </div>
+      </div>
+      <div class="f-card" style="display:flex; align-items:center; justify-content:center">
+        <div id="scheduler-cursor" style="font-size:3rem">📍</div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="padding:40px 32px; text-align:center; font-size:0.8rem; color:var(--text3)">
+    © 2025 Capy Code. Feito com 🦫 para engenheiros.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    let currentTag = '';
+    let currentPage = 1;
+
+    // ── ANIMATIONS ───────────────────────────────────────────────────────────
+    function initAnimations() {
+      ScrollTrigger.create({
+        start: "top -50",
+        onUpdate: self => document.getElementById('navbar').classList.toggle('scrolled', self.isActive)
+      });
+
+      const shufflerCards = gsap.utils.toArray('.shuffler-card');
+      setInterval(() => {
+        const last = shufflerCards.pop();
+        shufflerCards.unshift(last);
+        shufflerCards.forEach((card, i) => {
+          gsap.to(card, { y: i * 20, opacity: 1 - (i * 0.3), scale: 1 - (i * 0.05), duration: 0.8, ease: "power2.out" });
+        });
+      }, 3000);
+
+      gsap.to("#scheduler-cursor", { x: 50, repeat: -1, yoyo: true, duration: 2, ease: "power1.inOut" });
+    }
+
+    // ── THEME (REVEAL) ───────────────────────────────────────────────────────
+    function toggleTheme(e) {
+      const reveal = document.getElementById('themeReveal');
+      const isDark = document.documentElement.hasAttribute('data-dark');
+      const x = e ? e.clientX : window.innerWidth / 2;
+      const y = e ? e.clientY : window.innerHeight / 2;
+
+      reveal.style.background = isDark ? '#fff' : '#050505';
+      reveal.style.clipPath = `circle(0% at ${x}px ${y}px)`;
+      reveal.offsetHeight; 
+      reveal.style.transition = "clip-path 0.8s cubic-bezier(0.7, 0, 0.3, 1)";
+      reveal.style.clipPath = `circle(150% at ${x}px ${y}px)`;
+
+      setTimeout(() => {
+        const newDark = document.documentElement.toggleAttribute('data-dark');
+        localStorage.setItem('theme', newDark ? 'dark' : 'light');
+        document.getElementById('themeBtn').textContent = newDark ? '☀️' : '🌙';
+        reveal.style.clipPath = `circle(0% at ${x}px ${y}px)`;
+        reveal.style.transition = "none";
+      }, 800);
+    }
+    document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+    if (localStorage.getItem('theme') === 'dark') { document.documentElement.setAttribute('data-dark', ''); document.getElementById('themeBtn').textContent = '☀️'; }
+
+    // ── DATA FETCHING ────────────────────────────────────────────────────────
+    async function loadArticles(page = 1) {
+      currentPage = page;
+      const res = await fetch(`/api/articles?tag=${currentTag}&page=${page}&limit=6`);
+      const data = await res.json();
+      const articles = data.articles || [];
+      
+      document.getElementById('articleList').innerHTML = articles.map(a => `
+        <article class="art-card" onclick="location.href='/article?slug=${a.slug}'">
+          <div class="art-img-wrap"><img src="${a.coverImage || 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80'}" class="art-img" loading="lazy"></div>
+          <div class="art-body">
+            <div class="art-category">${a.tags[0] || 'Geral'}</div>
+            <h2 class="art-title">${a.title}</h2>
+            <p class="art-desc">${a.description}</p>
+          </div>
+        </article>`).join('');
+    }
+
+    async function loadTags() {
+      const tags = await fetch('/api/tags').then(r => r.json());
+      document.getElementById('tagCloud').innerHTML = tags.slice(0, 10).map(t => `
+        <span class="tc-tag" onclick="filterByTag('${t.tag}')">${t.tag}</span>
+      `).join('');
+    }
+
+    function filterByTag(tag) { 
+      currentTag = tag; 
+      loadArticles(1); 
+      document.getElementById('articlesSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ── TELEMETRY ────────────────────────────────────────────────────────────
+    function updateTelemetry() {
+      const events = ["Indexando conteúdo...", "Otimizando V8...", "98% Cache Hit", "Analizando tráfego...", "Sistema Online"];
+      const el = document.getElementById('typewriter');
+      let idx = 0;
+      function stream() {
+        const text = events[idx % events.length];
+        el.textContent = "";
+        let i = 0;
+        function t() {
+          if (i < text.length) { el.textContent += text.charAt(i++); setTimeout(t, 50); }
+          else { idx++; setTimeout(stream, 3000); }
+        }
+        t();
+      }
+      stream();
+    }
+
+    async function handleNewsletter(e) {
+      e.preventDefault();
+      const email = document.getElementById('nlEmail').value;
+      const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+      const data = await res.json();
+      document.getElementById('nlMsg').textContent = data.msg || data.error;
+    }
+
+    async function init() {
+      await loadArticles();
+      await loadTags();
+      initAnimations();
+      updateTelemetry();
+    }
+    init();
+  </script>
+</body>
+</html>
