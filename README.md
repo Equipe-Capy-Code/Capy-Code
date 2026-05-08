@@ -219,3 +219,16 @@ Todo o histórico de edições fica no Git — sem precisar de backup de banco d
 | Renderização | marked.js                            |
 | Frontend     | HTML + CSS + JS vanilla              |
 | Admin        | HTML puro (sem framework)            |
+
+---
+
+## 👥 Nossa Equipe (Equipe-Capy-Code)
+
+Este projeto é desenvolvido e mantido pelo nosso esquadrão:
+
+| Membro | Função / Papel |
+| ------ | -------------- |
+| **LFPE** | Analista de Sistemas (Owner) |
+| **Bruce** | Desenvolvedor Full Stack |
+| **Zen 11** | Desenvolvedor Júnior |
+
