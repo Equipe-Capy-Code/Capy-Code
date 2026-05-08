@@ -442,8 +442,12 @@ app.get('/article', (req, res) => res.sendFile(path.join(__dirname, 'article.htm
 app.get('/admin',   (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n🦫 Capy Code → http://localhost:${PORT}`);
-  console.log(`   📝 Admin  → http://localhost:${PORT}/admin`);
-  console.log(`   📡 RSS    → http://localhost:${PORT}/feed.xml\n`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🦫 Capy Code → http://localhost:${PORT}`);
+    console.log(`   📝 Admin  → http://localhost:${PORT}/admin`);
+    console.log(`   📡 RSS    → http://localhost:${PORT}/feed.xml\n`);
+  });
+}
+
+module.exports = app;
