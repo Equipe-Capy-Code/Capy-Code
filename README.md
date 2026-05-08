@@ -12,15 +12,19 @@ Blog técnico em português com painel de edição integrado. Conteúdo em Markd
 # 1. Instalar dependências
 npm install
 
-# 2. Subir o servidor
+# 2. Configurar variáveis de ambiente
+# Crie um arquivo .env na raiz do projeto e adicione a senha de administrador:
+# ADMIN_PASSWORD=sua_senha_secreta
+
+# 3. Subir o servidor
 npm run dev
 ```
 
 Pronto. Abra:
 
-| URL | O quê |
-|-----|-------|
-| `http://localhost:3000` | Blog público |
+| URL                           | O quê            |
+| ----------------------------- | ---------------- |
+| `http://localhost:3000`       | Blog público     |
 | `http://localhost:3000/admin` | Painel de edição |
 
 ---
@@ -78,10 +82,10 @@ Blog/
 
 ### Status dos artigos
 
-| Status | Visível no blog? |
-|--------|-----------------|
-| `draft` | ❌ Não |
-| `published` | ✅ Sim |
+| Status      | Visível no blog? |
+| ----------- | ---------------- |
+| `draft`     | ❌ Não           |
+| `published` | ✅ Sim           |
 
 ---
 
@@ -98,8 +102,8 @@ date: 2025-04-14
 tags:
   - TypeScript
   - React
-status: published        # draft | published
-readTime: 12 min         # opcional — calculado automaticamente
+status: published # draft | published
+readTime: 12 min # opcional — calculado automaticamente
 ---
 
 # Conteúdo do artigo
@@ -119,14 +123,14 @@ O arquivo é criado automaticamente ao salvar pelo painel. O nome do arquivo é 
 
 O servidor expõe uma API que o blog e o admin consomem:
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| `GET` | `/api/articles` | Lista artigos publicados |
-| `GET` | `/api/articles?status=all` | Lista todos (para o admin) |
-| `GET` | `/api/articles/:slug` | Retorna artigo completo com HTML renderizado |
-| `POST` | `/api/articles` | Cria novo artigo |
-| `PUT` | `/api/articles/:slug` | Atualiza artigo existente |
-| `DELETE` | `/api/articles/:slug` | Deleta artigo |
+| Método   | Rota                       | Descrição                                    |
+| -------- | -------------------------- | -------------------------------------------- |
+| `GET`    | `/api/articles`            | Lista artigos publicados                     |
+| `GET`    | `/api/articles?status=all` | Lista todos (para o admin)                   |
+| `GET`    | `/api/articles/:slug`      | Retorna artigo completo com HTML renderizado |
+| `POST`   | `/api/articles`            | Cria novo artigo                             |
+| `PUT`    | `/api/articles/:slug`      | Atualiza artigo existente                    |
+| `DELETE` | `/api/articles/:slug`      | Deleta artigo                                |
 
 ### Exemplo de resposta — `GET /api/articles`
 
@@ -136,7 +140,7 @@ O servidor expõe uma API que o blog e o admin consomem:
     "slug": "por-dentro-do-compilador-typescript",
     "title": "Por dentro do compilador TypeScript",
     "description": "AST interna, type checker...",
-    "author": "Lucas Pereira",
+    "author": "Lui",
     "date": "2025-04-14",
     "tags": ["TypeScript", "Compiladores"],
     "status": "published",
@@ -151,8 +155,8 @@ Igual ao anterior, mais os campos:
 
 ```json
 {
-  "content": "# Por dentro do compilador...",   // Markdown bruto
-  "html":    "<h1>Por dentro do...</h1>"        // HTML renderizado
+  "content": "# Por dentro do compilador...", // Markdown bruto
+  "html": "<h1>Por dentro do...</h1>" // HTML renderizado
 }
 ```
 
@@ -172,9 +176,9 @@ Escrever no admin  →  Salvar  →  Arquivo .md criado em content/articles/
 
 ## Variáveis de ambiente
 
-| Variável | Padrão | Descrição |
-|----------|--------|-----------|
-| `PORT` | `3000` | Porta do servidor |
+| Variável | Padrão | Descrição         |
+| -------- | ------ | ----------------- |
+| `PORT`   | `3000` | Porta do servidor |
 
 ```bash
 PORT=8080 npm run dev
@@ -208,10 +212,10 @@ Todo o histórico de edições fica no Git — sem precisar de backup de banco d
 
 ## Stack
 
-| Camada | Tecnologia |
-|--------|-----------|
-| Servidor | Node.js + Express |
-| Conteúdo | Markdown + Frontmatter (gray-matter) |
-| Renderização | marked.js |
-| Frontend | HTML + CSS + JS vanilla |
-| Admin | HTML puro (sem framework) |
+| Camada       | Tecnologia                           |
+| ------------ | ------------------------------------ |
+| Servidor     | Node.js + Express                    |
+| Conteúdo     | Markdown + Frontmatter (gray-matter) |
+| Renderização | marked.js                            |
+| Frontend     | HTML + CSS + JS vanilla              |
+| Admin        | HTML puro (sem framework)            |
