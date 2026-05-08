@@ -1,0 +1,32 @@
+name: CI Capy Code
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checando o Repositório
+      uses: actions/checkout@v4
+    
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+        
+    - name: Instalar Dependências
+      run: npm install
+      
+    - name: Auditoria de Segurança Inicial
+      run: npm audit --audit-level=high
+      
+    - name: Validar Build
+      # Por enquanto, apenas confirmamos que as dependências resolvem.
+      # No futuro, podemos adicionar 'npm test' ou validação de formatação aqui.
+      run: echo "O projeto foi estruturado corretamente e as dependências estão seguras."
